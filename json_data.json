@@ -1,0 +1,68 @@
+{
+    "Biens Consommation": {
+        "cost": "",
+        "price": "",
+        "marque": "",
+        "subclasses": {
+            "Articles Menagers": {
+                "subclasses": {
+                    "Meubles":{
+                        "materiaux": "",
+                        "couleur": "",
+                        "dimension": "",
+                        "subclasses": {
+                            "Canapes":{},
+                            "Chaise":{},
+                            "Table": {}
+                        }
+                    },
+                    "Appareils Electromenagers": {
+                        "capacites": "",
+                        "subclasses": {
+                            "Refrigerateur": {
+                                "efficacite" : ""
+                            },
+                            "Lave-vaisselle": {
+                                "programme" : ""
+                            },
+                            "Lave-linge": {
+                                "programme" : ""
+                            }
+                        }
+                    },
+                    "Ustensiles Cuisine": {
+                        "materiaux" : "",
+                        "subclasses": {
+                            "Casserole Poêle": {
+                                "diametre" : ""
+                            },
+                            "Batterie Cuisine": {
+                                "nombre_pieces" : ""
+                            }
+                        }
+                    }
+                }
+            },
+            "Vêtements Accessoires": {
+                "subclasses": {
+                    "Vêtements": {
+                        "taille" : "",
+                        "couleur" : "",
+                        "matiere" : "",
+                        "subclasses": {
+                            "Haut": {},
+                            "Pantalon": {},
+                            "Robe" : {}
+                        }
+                    },
+                    "Accessoires": {
+                        "couleur" : ""
+                    },
+                    "Chaussures": {
+                        "pointure" : ""
+                    }
+                }
+            }
+        }
+    }
+}
