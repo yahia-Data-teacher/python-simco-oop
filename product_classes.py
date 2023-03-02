@@ -1,8 +1,14 @@
-class Biens_Consommation:
+class Product:
 	def __init__(self, cost, price, marque):
 		self.cost = cost
 		self.price = price
 		self.marque = marque
+		self.name=type(self).__name__
+	
+class Biens_Consommation(Product):
+	def __init__(self,cost, price, marque):
+		super().__init__(cost, price, marque)
+		
 
 class Articles_Menagers(Biens_Consommation):
 	def __init__(self, cost, price, marque):
@@ -95,6 +101,8 @@ class Chaussures(Vetements_Accessoires):
 		super().__init__(cost, price, marque)
 		self.pointure = pointure
 
+#################################@@
+
 # Define a function that prompts the user to enter values for a given class
 def prompt_for_instance(cls):
     # Get the names of the constructor arguments
@@ -105,113 +113,131 @@ def prompt_for_instance(cls):
     # Create an instance of the class using the entered values
     return cls(*args)
 
-# Prompt the user to create instances of the Biens_Consommation, Articles_Menagers, and Meubles classes
-#biens_consommation = prompt_for_instance(Biens_Consommation)
-#articles_menagers = prompt_for_instance(Articles_Menagers)
+#################################@@
+
 def sep():
     print("\n====================\n")
     
 sep()
 
-#chaussures = prompt_for_instance(Chaussures)
-#print(vars(chaussures))
+# Prompt the user to create instances of the Biens_Consommation, Articles_Menagers, and Meubles classes
+#biens_consommation = prompt_for_instance(Biens_Consommation)
+#articles_menagers = prompt_for_instance(Articles_Menagers)
+"""
+chaussures = prompt_for_instance(Chaussures)
+print(vars(chaussures))
+"""
+#################################@@
 
-
-class InventoryItem:
-	def __init__(self, product, quantity, cost, price):
+class InventoryProductEntry:
+	def __init__(self, product:Product, quantity):
 		self.product = product
 		self.quantity = quantity
-		self.cost = cost
-		self.price = price
 		self.sales = 0
 
 	def sell(self, quantity):
 		if self.quantity < quantity:
-			raise ValueError("Not enough stock")
+			print(f"Not enough {self.product.name} stock")
+			return
 		self.quantity -= quantity
-		self.sales += quantity * self.price
+		self.sales += quantity * self.product.price
 
 	def restock(self, quantity):
 		self.quantity += quantity
 
 	def __repr__(self):
-		return "{} ({}): {} in stock, {} sold, {} revenue".format(type(self.product).__name__, self.product.marque, self.quantity, self.sales / self.price, self.sales)
+		return "{} ({}): {} in stock,  price:{}".format(type(self.product).__name__, self.product.marque, self.quantity, self.product.price)
+
+#################################@@
 
 class RevenueTracker:
     def __init__(self):
-        self.sales = {}
         self.revenue = 0
 
-    def add_sale(self, item,quantity):
-        if item not in self.sales:
-            self.sales[item] = 0
-        self.sales[item] += 1
-        self.revenue += item.price*quantity
-
-    def get_sales(self):
-        return self.sales
+    def add_sale(self, product,quantity):
+        pass
+		
+        """
+		if product not in self.sales:
+            self.sales[product] = 0
+        self.sales[product] += quantity
+        self.revenue += product.price*quantity'''
+		"""
+    #def get_sales(self):
+    #    return self.sales
 
     def get_revenue(self):
         return self.revenue
 
+#################################@@
+from typing import Dict
+
 class InventoryManager:
 	def __init__(self):
 		self.revenue_tracker = RevenueTracker()
-		self.inventory = []
+		self.inventory : Dict[str, InventoryProductEntry] = {}
 
-	@staticmethod
-	def ItemsEqual(inventory_item, item):
-		return type(inventory_item.product).__name__ == type(item.product).__name__
+	def product_exists(self,product:Product):
+		for inventory_product_entry_key in self.inventory:
+			if (inventory_product_entry_key == product.name):
+				return True
+		return False
+		
+	def add_product(self, product:Product, quantity):
+		#if product exists inventory, increase quantity 
+		if self.product_exists(product):
+			self.inventory[product.name].quantity+=quantity
+		else:
+			inventory_product_entry = InventoryProductEntry(product, quantity)
+			self.inventory[product.name]=inventory_product_entry
+			
+	def remove_product(self, product:Product):
+		if self.product_exists(product):
+				self.inventory.pop(product.name)
 
-	def add_item(self, item, quantity, cost, price):
-		inventory_item = InventoryItem(item, quantity, cost, price)
-		self.inventory.append(inventory_item)
-
-	def remove_item(self, item):
-		for inventory_item in self.inventory:
-			if self.ItemsEqual(inventory_item, item):
-				self.inventory.remove(inventory_item)
-
-	def sell_item(self, item, quantity):
-		for inventory_item in self.inventory:
-			if self.ItemsEqual(inventory_item, item):
-				inventory_item.sell(quantity)
-				self.revenue_tracker.add_sale(item, quantity)
+	def sell_product(self, product:Product, quantity):
+		for inventory_product_entry_key in self.inventory:
+			if inventory_product_entry_key == product.name:
+				self.inventory[inventory_product_entry_key].sell(quantity)
+				self.revenue_tracker.add_sale(product, quantity)
 				return
-		raise ValueError("Item not found")
+		print(f"product {product.name} not found")
 
-	def restock_item(self, item, quantity):
-		for inventory_item in self.inventory:
-			if self.ItemsEqual(inventory_item, item):
-				inventory_item.restock(quantity)
+	def restock_product(self, product:Product, quantity):
+		for inventory_product_entry_key in self.inventory:
+			if self.product_exists(product):
+				self.inventory[inventory_product_entry_key].restock(quantity)
 				return
-		raise ValueError("Item not found")
+		print(f"product {product.name} not found")
 
-	def get_item(self, name):
-		for inventory_item in self.inventory:
-			if type(inventory_item.product).__name__ == name:
-				return inventory_item
-		raise ValueError("Item not found")
+	def get_product(self, name):
+		for inventory_product_entry_key in self.inventory:
+			if inventory_product_entry_key == name:
+				return self.inventory[inventory_product_entry_key].product
+		print(f"product {name} not found")
 
-	def list_items(self):
-		for inventory_item in self.inventory:
-			print(inventory_item)
+	def list_products(self):
+		for inventory_product_entry_key in self.inventory:
+			print(self.inventory[inventory_product_entry_key])
+	
 
-	# Create an instance of the inventory manager
+# Create an instance of the inventory manager
 inventory_manager = InventoryManager()
 
-# Add some items to the inventory
-inventory_manager.add_item(Canapes("materiau1", "couleur1", "dimension1", 100, 200, "marque1"), 5, 80, 150)
-inventory_manager.add_item(Chaise("materiau2", "couleur2", "dimension2", 50, 100, "marque2"), 10, 20, 50)
-inventory_manager.add_item(Table("materiau3", "couleur3", "dimension3", 150, 180,"BULTEX"),10,15,20)
+# Add some products to the inventory
+inventory_manager.add_product(Canapes("materiau1", "couleur1", "dimension1", 100, 200, "marque1"), 10)
+inventory_manager.add_product(Chaise("materiau2", "couleur2", "dimension2", 50, 100, "marque2"), 5)
+inventory_manager.add_product(Table("materiau3", "couleur3", "dimension3", 150, 180,"BULTEX"),12)
+
+inventory_manager.sell_product(inventory_manager.get_product("Chaise"),6)
+
+#inventory_manager.restock_product(inventory_manager.get_product("Canapes"),4)
+
+#print(inventory_manager.revenue_tracker.get_revenue())
+
+#print(inventory_manager.revenue_tracker.get_sales())
+
+inventory_manager.list_products()
 
 
-inventory_manager.sell_item(inventory_manager.get_item("Chaise"),6)
-
-inventory_manager.restock_item(inventory_manager.get_item("Canapes"),7)
-
-print(inventory_manager.revenue_tracker.get_revenue())
-
-print(inventory_manager.revenue_tracker.get_sales())
-
-inventory_manager.list_items()
+#canap = Canapes("materiau1", "couleur1", "dimension1", 100, 200, "marque1")
