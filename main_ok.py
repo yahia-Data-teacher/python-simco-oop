@@ -4,12 +4,7 @@ import json
 from unidecode import unidecode
 
 import generator
-
-                             
-
-if __name__ == '__main__':
-
-    
+def main():
     json_data= generator.read_json("json_data.json")
     json_data = generator.trimspaces(json_data)
 
@@ -34,3 +29,9 @@ if __name__ == '__main__':
     #########
 
     generator.generate_tree_hierarchy(json_dict).show()
+                             
+
+if __name__ == '__main__':
+
+    
+    main()
